@@ -7,3 +7,6 @@ WebManager::WebManager(Wnd* wnd) {
 	reciveSock=::socket(AF_INET, SOCK_DGRAM, 0);
 	sendSock=::socket(AF_INET, SOCK_DGRAM, 0);
 }
+void WebManager::disconnet() {
+	return;
+}

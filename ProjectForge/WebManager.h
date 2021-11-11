@@ -1,8 +1,7 @@
 #pragma once
 #include "WebMessage.h"
 #include "Wnd.h"
-class WebManager
-{
+class WebManager{
 public:
 	Wnd* wnd;
 	int localport;

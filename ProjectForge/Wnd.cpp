@@ -1,10 +1,12 @@
 #include "Wnd.h"
 #include "conio.h"
+#include "WebManager.h"
 BEGIN_MESSAGE_MAP(Wnd, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_GETMINMAXINFO()
 	ON_COMMAND(HELP, &Wnd::OnHelp)
 	ON_COMMAND(ABOUT, &Wnd::OnAbout)
+	ON_COMMAND(DISCONNECT, &Wnd::OnDisconnect)
 END_MESSAGE_MAP()
 
 
@@ -14,6 +16,7 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 		return -1;
 	menu.LoadMenuW(MAIN_MENU);
 	SetMenu(&menu);
+	webManager = new WebManager(this);
 	// TODO:  在此添加您专用的创建代码
 
 	return 0;
@@ -44,4 +47,10 @@ void Wnd::OnAbout()
 	AboutDialog* p = new AboutDialog;
 	p->DoModal();
 	// TODO: 在此添加命令处理程序代码
+}
+
+
+void Wnd::OnDisconnect()
+{
+	webManager->disconnet();
 }
