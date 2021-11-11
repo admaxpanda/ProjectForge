@@ -2,10 +2,17 @@
 #include "pch.h"
 class WebMessage
 {
-	CPoint pos;//position
-	double ang;//angle
+public:
+	CPoint picture;
+	int damage;
+	CPoint pos;
+	double toward;
+	int lenth;
+
 	int id;//stateID
-	int helth;
+
+	int health;
 	int body;
+	WebMessage(CPoint, int, CPoint, double, int, int, int, int);
 };
 

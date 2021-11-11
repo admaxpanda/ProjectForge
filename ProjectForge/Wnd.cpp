@@ -1,7 +1,10 @@
 #include "Wnd.h"
+#include "conio.h"
 BEGIN_MESSAGE_MAP(Wnd, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_GETMINMAXINFO()
+	ON_COMMAND(HELP, &Wnd::OnHelp)
+	ON_COMMAND(ABOUT, &Wnd::OnAbout)
 END_MESSAGE_MAP()
 
 
@@ -25,4 +28,20 @@ void Wnd::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 	lpMMI->ptMaxTrackSize.x = 1366; 
 	lpMMI->ptMaxTrackSize.y = 768; 
 	CFrameWnd::OnGetMinMaxInfo(lpMMI);
+}
+
+
+void Wnd::OnHelp()
+{
+	HelpDialog* p = new HelpDialog;
+	p->DoModal();
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void Wnd::OnAbout()
+{
+	AboutDialog* p = new AboutDialog;
+	p->DoModal();
+	// TODO: 在此添加命令处理程序代码
 }

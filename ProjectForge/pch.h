@@ -1,3 +1,10 @@
 #pragma once
 #include <afxwin.h>
 #include "resource.h"
+#include <map>
+#include <queue>
+#include <thread>
+#include <winsock2.h>
+#include <afxdialogex.h>
+using std::map;
+using std::queue;

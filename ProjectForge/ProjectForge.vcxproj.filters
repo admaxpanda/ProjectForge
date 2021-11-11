@@ -42,6 +42,12 @@
     <ClInclude Include="WebMessage.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="HelpDialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="AboutDialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ProjectForge.rc">
@@ -68,6 +74,12 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="WebMessage.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="HelpDialog.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="AboutDialog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

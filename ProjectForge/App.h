@@ -3,6 +3,7 @@
 #include "Wnd.h"
 class App:public CWinApp
 {
+public:
 	BOOL InitInstance();
 };
 

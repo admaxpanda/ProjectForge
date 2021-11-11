@@ -140,7 +140,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="AboutDialog.h" />
     <ClInclude Include="App.h" />
+    <ClInclude Include="HelpDialog.h" />
     <ClInclude Include="Message.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
@@ -154,7 +156,9 @@
     <ResourceCompile Include="ProjectForge.rc" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="AboutDialog.cpp" />
     <ClCompile Include="App.cpp" />
+    <ClCompile Include="HelpDialog.cpp" />
     <ClCompile Include="Message.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="State.cpp" />

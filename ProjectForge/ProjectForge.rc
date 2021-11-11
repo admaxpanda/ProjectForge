@@ -54,15 +54,124 @@ MAIN_MENU MENU
 BEGIN
     POPUP "开始"
     BEGIN
-        MENUITEM "建立主机",                        65535
-        MENUITEM "建立连接",                        ID_40004
-        MENUITEM "断开连接",                        ID_40005
+        MENUITEM "建立主机",                        CREATE_HOST
+        MENUITEM "建立连接",                        CONNECT_HOST
+        MENUITEM "断开连接",                        DISCONNECT
     END
     POPUP "帮助"
     BEGIN
-        MENUITEM "操作帮助",                        ID_40001
-        MENUITEM "关于...",                       ID_40002
+        MENUITEM "操作帮助",                        HELP
+        MENUITEM "关于...",                       ABOUT
     END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    HELP_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 214
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 57
+    END
+
+    ABOUT_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 216
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 57
+    END
+
+    CREATE_HOST_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+
+    CONNECT_HOST_DIALOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 302
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 169
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+HELP_DIALOG DIALOGEX 0, 0, 221, 64
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "操作帮助:\n    点选开始进行建立主机，连接到主机，以及断开连接\n    通过WSAD进行移动\n    鼠标左键进行攻击，右键进行防御，移动鼠标改变方位\n    c进行蹲伏，shift进行垫步，space进行跳跃",IDC_STATIC,7,7,208,50
+END
+
+ABOUT_DIALOG DIALOGEX 0, 0, 223, 64
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    LTEXT           "版权所有 ? MaxPanda\nPowered by MFC",IDC_STATIC,65,21,102,20
+END
+
+CREATE_HOST_DIALOG DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,189,155,50,14
+    PUSHBUTTON      "取消",IDCANCEL,243,155,50,14
+END
+
+CONNECT_HOST_DIALOG DIALOGEX 0, 0, 309, 176
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "确定",IDOK,199,155,50,14
+    PUSHBUTTON      "取消",IDCANCEL,252,155,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+HELP_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+ABOUT_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+CREATE_HOST_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+CONNECT_HOST_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 #endif    // 中文(简体，中国) resources
