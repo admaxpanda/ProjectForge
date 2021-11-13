@@ -17,5 +17,7 @@ public:
     afx_msg void OnHelp();
     afx_msg void OnAbout();
     afx_msg void OnDisconnect();
+    afx_msg void OnHost();
+    afx_msg void OnConnect();
 };
 

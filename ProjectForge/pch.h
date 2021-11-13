@@ -6,5 +6,7 @@
 #include <thread>
 #include <winsock2.h>
 #include <afxdialogex.h>
+#include <string>
+using std::string;
 using std::map;
 using std::queue;

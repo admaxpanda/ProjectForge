@@ -1,12 +1,16 @@
 #include "Wnd.h"
 #include "conio.h"
 #include "WebManager.h"
+#include "CreateHostDialog.h"
+#include "ConnectHostDialog.h"
 BEGIN_MESSAGE_MAP(Wnd, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_GETMINMAXINFO()
 	ON_COMMAND(HELP, &Wnd::OnHelp)
 	ON_COMMAND(ABOUT, &Wnd::OnAbout)
 	ON_COMMAND(DISCONNECT, &Wnd::OnDisconnect)
+	ON_COMMAND(CREATE_HOST, &Wnd::OnHost)
+	ON_COMMAND(CONNECT_HOST, &Wnd::OnConnect)
 END_MESSAGE_MAP()
 
 
@@ -53,4 +57,22 @@ void Wnd::OnAbout()
 void Wnd::OnDisconnect()
 {
 	webManager->disconnet();
+}
+
+
+void Wnd::OnHost()
+{
+	CreateHostDialog* p = new CreateHostDialog;
+	p->DoModal();
+	AllocConsole();
+	_cprintf("%d %d", p->ip.GetLength(), p->port.GetLength());
+	// TODO: 在此添加命令处理程序代码
+}
+
+
+void Wnd::OnConnect()
+{
+	ConnectHostDialog* p = new ConnectHostDialog;
+	p->DoModal();
+	// TODO: 在此添加命令处理程序代码
 }

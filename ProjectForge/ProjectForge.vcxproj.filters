@@ -51,6 +51,9 @@
     <ClInclude Include="CreateHostDialog.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="ConnectHostDialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ProjectForge.rc">
@@ -86,6 +89,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CreateHostDialog.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ConnectHostDialog.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
