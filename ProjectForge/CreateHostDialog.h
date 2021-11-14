@@ -8,7 +8,8 @@ class CreateHostDialog : public CDialogEx
 	DECLARE_DYNAMIC(CreateHostDialog)
 
 public:
-	CString ip, port;
+	string ip;
+	int port;
 public:
 	CreateHostDialog(CWnd* pParent = nullptr);   // 标准构造函数
 	virtual ~CreateHostDialog();

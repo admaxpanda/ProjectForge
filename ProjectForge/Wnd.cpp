@@ -64,8 +64,9 @@ void Wnd::OnHost()
 {
 	CreateHostDialog* p = new CreateHostDialog;
 	p->DoModal();
-	AllocConsole();
-	_cprintf("%d %d", p->ip.GetLength(), p->port.GetLength());
+	webManager->createHost(p->ip, p->port);
+	//AllocConsole();
+	//_cprintf("%s %d\n", p->ip.c_str(), p->port);
 	// TODO: 在此添加命令处理程序代码
 }
 

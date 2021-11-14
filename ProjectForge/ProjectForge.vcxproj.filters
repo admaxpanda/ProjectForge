@@ -39,9 +39,6 @@
     <ClInclude Include="Message.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="WebMessage.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="HelpDialog.h">
       <Filter>头文件</Filter>
     </ClInclude>
@@ -77,9 +74,6 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Message.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="WebMessage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HelpDialog.cpp">

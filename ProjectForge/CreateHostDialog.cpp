@@ -50,8 +50,12 @@ void CreateHostDialog::OnEnChangeEdit1()
 
 void CreateHostDialog::OnBnClickedOk()
 {
-	GetDlgItemText(IDC_EDIT1, ip);
-	GetDlgItemText(IDC_EDIT2, port);
+	USES_CONVERSION;
+	CString a, b;
+	GetDlgItemText(IDC_EDIT1, a);
+	GetDlgItemText(IDC_EDIT2, b);
+	ip = CT2A(a.GetBuffer());
+	port = _ttoi(b);
 	// TODO: 在此添加控件通知处理程序代码
 	CDialogEx::OnOK();
 }

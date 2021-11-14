@@ -87,7 +87,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
-      <SDLCheck>true</SDLCheck>
+      <SDLCheck>false</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
     </ClCompile>
@@ -152,7 +152,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="WebManager.h" />
-    <ClInclude Include="WebMessage.h" />
     <ClInclude Include="Wnd.h" />
   </ItemGroup>
   <ItemGroup>
@@ -168,7 +167,6 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="WebManager.cpp" />
-    <ClCompile Include="WebMessage.cpp" />
     <ClCompile Include="Wnd.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
