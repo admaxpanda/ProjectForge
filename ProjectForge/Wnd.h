@@ -3,6 +3,8 @@
 #include "HelpDialog.h"
 #include "AboutDialog.h"
 #include "Player.h"
+#include "CreateHostDialog.h"
+#include "ConnectHostDialog.h"
 class WebManager;
 class Wnd:public CFrameWnd
 {
@@ -10,6 +12,9 @@ public:
     CMenu menu;
     WebManager* webManager;
     Player* player;
+    CreateHostDialog* create;
+    ConnectHostDialog* connect;
+
 public:
     DECLARE_MESSAGE_MAP()
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

@@ -4,17 +4,13 @@
 class WebManager{
 public:
 	Wnd* wnd;
-	int localport;
-	char* localIP;
-	int targetPort;
-	char* targetIP;
-	SOCKET sendSock;
-	SOCKET reciveSock;
+	SOCKET sock;
+	SOCKADDR_IN localAddr, targetAddr;
+	int localLen, targetLen;
 	static UINT thread(LPVOID pParam);
 	void createHost(string localIP, const int localport);
 	void connectHost(string ip, const int port);
 	void disconnet();
-	void send();
 	void rest();
 	int recive[10];
 	int send[10];

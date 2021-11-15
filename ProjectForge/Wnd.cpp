@@ -18,9 +18,13 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
+	this->m_bAutoMenuEnable = 0;
 	menu.LoadMenuW(MAIN_MENU);
 	SetMenu(&menu);
+	menu.EnableMenuItem(DISCONNECT, MF_GRAYED);
 	webManager = new WebManager(this);
+	create = new CreateHostDialog;
+	connect = new ConnectHostDialog;
 	// TODO:  在此添加您专用的创建代码
 
 	return 0;
@@ -42,6 +46,7 @@ void Wnd::OnHelp()
 {
 	HelpDialog* p = new HelpDialog;
 	p->DoModal();
+	delete p;
 	// TODO: 在此添加命令处理程序代码
 }
 
@@ -50,6 +55,7 @@ void Wnd::OnAbout()
 {
 	AboutDialog* p = new AboutDialog;
 	p->DoModal();
+	delete p;
 	// TODO: 在此添加命令处理程序代码
 }
 
@@ -62,9 +68,8 @@ void Wnd::OnDisconnect()
 
 void Wnd::OnHost()
 {
-	CreateHostDialog* p = new CreateHostDialog;
-	p->DoModal();
-	webManager->createHost(p->ip, p->port);
+	create->DoModal();
+	//webManager->createHost(p->ip, p->port);
 	//AllocConsole();
 	//_cprintf("%s %d\n", p->ip.c_str(), p->port);
 	// TODO: 在此添加命令处理程序代码
@@ -73,7 +78,7 @@ void Wnd::OnHost()
 
 void Wnd::OnConnect()
 {
-	ConnectHostDialog* p = new ConnectHostDialog;
-	p->DoModal();
+	connect->DoModal();
+	
 	// TODO: 在此添加命令处理程序代码
 }

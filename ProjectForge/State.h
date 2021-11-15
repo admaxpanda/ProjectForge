@@ -1,7 +1,6 @@
 #pragma once
 #include "pch.h"
 #include "Player.h"
-#include "WebMessage.h"
 class State
 {
 public:
@@ -19,11 +18,11 @@ public:
 	//обр╩╦Ж
 	State* next;
 	int ID;
-	void virtual stateCalculation(WebMessage);
-	void virtual damageCalculation(WebMessage);
+	void virtual stateCalculation(int[]);
+	void virtual damageCalculation(int[]);
 	void virtual messageReact();
 	int virtual isOverlap(CPoint,double,int);
-	WebMessage toWebMessage();
+	int * toWebMessage();
 	State();
 };
 class Stand :public State {
