@@ -22,3 +22,15 @@
 using std::string;
 using std::map;
 using std::queue;
+
+#define STEPCD 60
+#define TICK 17
+
+#define MESSAGE 0x7
+#define MESSAGEMOVE 0x1
+#define MESSAGEATTACK 0x2
+#define MESSAGEDEFEND 0x3
+#define MESSAGESPIKE 0x4
+#define MESSAGEJUMP 0x5
+#define MESSAGESTEP 0x6
+#define MESSAGESQUAT 0x7

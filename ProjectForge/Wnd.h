@@ -16,6 +16,7 @@ public:
     CDC bufferdc;
     CBitmap bufferbmp;
     void BufferDraw(CDC* pdc);
+    void controlmanager();
 public:
     DECLARE_MESSAGE_MAP()
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

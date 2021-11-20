@@ -18,7 +18,7 @@ public:
 	//обр╩╦Ж
 	State* next;
 	int ID;
-	void virtual stateCalculation(int[])=0;
+	void virtual stateCalculation(const int[])=0;
 	void virtual damageCalculation(int[]) = 0;
 	void virtual messageReact() = 0;
 	int virtual isOverlap(CPoint,double,int) = 0;

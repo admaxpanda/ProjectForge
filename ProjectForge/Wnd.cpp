@@ -30,7 +30,7 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	create = new CreateHostDialog;
 	connect = new ConnectHostDialog;
 	// TODO:  在此添加您专用的创建代码
-	SetTimer(0, 100, 0);
+	SetTimer(0, 17, 0);
 	return 0;
 }
 
@@ -40,12 +40,23 @@ void Wnd::OnTimer(UINT_PTR nIDEvnet) {
 		memcpy(webManager->send, player->toWebMessage(),sizeof(webManager->send));
 		webManager->sendOnTimer();
 	}
-	if (webManager->recive[STATEID])
-	{
-
+	if (GetAsyncKeyState('a')>0)
+		_cprintf("'a' IS DOWN\n");
+	//controlmanager();
+	//player->stateCalculation(webManager->recive);
+}
+void Wnd::controlmanager() {
+	player->stepCD > 0 ? player->stepCD-- : 0;
+	if (GetKeyState(VK_LSHIFT)>0) {
+		while (!player->messageQ.empty())
+			player->messageQ.pop();
+		if (!player->stepCD)
+		{
+			//player->messageQ.push(ControlMessage(MESSAGESTEP));
+			return;
+		}
 	}
 }
-
 void Wnd::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
@@ -93,7 +104,6 @@ void Wnd::OnHost()
 		webManager->createHost(create->ip, create->port);
 	}
 }
-
 
 void Wnd::OnConnect()
 {
