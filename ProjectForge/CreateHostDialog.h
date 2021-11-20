@@ -10,6 +10,7 @@ class CreateHostDialog : public CDialogEx
 public:
 	string ip;
 	int port;
+	int confirm=0;
 public:
 	CreateHostDialog(CWnd* pParent = nullptr);   // 标准构造函数
 	virtual ~CreateHostDialog();

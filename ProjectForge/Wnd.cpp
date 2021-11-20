@@ -11,6 +11,7 @@ BEGIN_MESSAGE_MAP(Wnd, CFrameWnd)
 	ON_COMMAND(DISCONNECT, &Wnd::OnDisconnect)
 	ON_COMMAND(CREATE_HOST, &Wnd::OnHost)
 	ON_COMMAND(CONNECT_HOST, &Wnd::OnConnect)
+	ON_WM_TIMER()
 END_MESSAGE_MAP()
 
 
@@ -18,6 +19,7 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
 		return -1;
+	AllocConsole();
 	this->m_bAutoMenuEnable = 0;
 	menu.LoadMenuW(MAIN_MENU);
 	SetMenu(&menu);
@@ -26,10 +28,21 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	create = new CreateHostDialog;
 	connect = new ConnectHostDialog;
 	// TODO:  在此添加您专用的创建代码
-
+	SetTimer(0, 100, 0);
 	return 0;
 }
 
+void Wnd::OnTimer(UINT_PTR nIDEvnet) {
+	//_cprintf("QUQ\n");
+	if (webManager->isconnecting) {
+		memcpy(webManager->send, player->toWebMessage(),sizeof(webManager->send));
+		webManager->sendOnTimer();
+	}
+	if (webManager->recive[STATEID])
+	{
+
+	}
+}
 
 void Wnd::OnGetMinMaxInfo(MINMAXINFO* lpMMI)
 {
@@ -69,16 +82,27 @@ void Wnd::OnDisconnect()
 void Wnd::OnHost()
 {
 	create->DoModal();
-	//webManager->createHost(p->ip, p->port);
-	//AllocConsole();
-	//_cprintf("%s %d\n", p->ip.c_str(), p->port);
-	// TODO: 在此添加命令处理程序代码
+	if (create->confirm)
+	{
+		menu.EnableMenuItem(DISCONNECT, MF_ENABLED);
+		menu.EnableMenuItem(CREATE_HOST, MF_GRAYED);
+		menu.EnableMenuItem(CONNECT_HOST, MF_GRAYED);
+		create->confirm--;
+		webManager->createHost(create->ip, create->port);
+	}
 }
 
 
 void Wnd::OnConnect()
 {
 	connect->DoModal();
-	
+	if (connect->confirm)
+	{
+		menu.EnableMenuItem(DISCONNECT, MF_ENABLED);
+		menu.EnableMenuItem(CREATE_HOST, MF_GRAYED);
+		menu.EnableMenuItem(CONNECT_HOST, MF_GRAYED);
+		connect->confirm--;
+		webManager->connectHost(connect->ip, connect->port);
+	}
 	// TODO: 在此添加命令处理程序代码
 }

@@ -36,7 +36,7 @@
     <ClInclude Include="State.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Message.h">
+    <ClInclude Include="ControlMessage.h">
       <Filter>头文件</Filter>
     </ClInclude>
     <ClInclude Include="HelpDialog.h">
@@ -73,7 +73,7 @@
     <ClCompile Include="State.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Message.cpp">
+    <ClCompile Include="ControlMessage.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="HelpDialog.cpp">

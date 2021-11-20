@@ -6,9 +6,9 @@ class State
 public:
 	Player* player;
 	//时间
-	int totTick;
-	int startTick;
-	int passTick;
+	int totTick=0;
+	int startTick=0;
+	int passTick=0;
 	//状态
 	CPoint picture;
 	int damage;
@@ -18,14 +18,24 @@ public:
 	//下一个
 	State* next;
 	int ID;
-	void virtual stateCalculation(int[]);
-	void virtual damageCalculation(int[]);
-	void virtual messageReact();
-	int virtual isOverlap(CPoint,double,int);
-	int * toWebMessage();
-	State();
+	void virtual stateCalculation(int[])=0;
+	void virtual damageCalculation(int[]) = 0;
+	void virtual messageReact() = 0;
+	int virtual isOverlap(CPoint,double,int) = 0;
+	State(Player*);
 };
-class Stand :public State {
+class Standing :public State {
+	//void virtual damageCalculation(int[]);
+};
+class Movint :public Standing {
 
 };
-
+class Jumping :public State {
+	//void virtual damageCalculation(int[]);
+};
+class squating :public State {
+	//void virtual damageCalculation(int[]);
+};
+class dead :public State {
+	//void virtual damageCalculation(int[]);
+};

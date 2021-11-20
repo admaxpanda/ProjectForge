@@ -9,7 +9,7 @@ class ConnectHostDialog : public CDialogEx
 public:
 	int port;
 	string ip;
-
+	int confirm=0;
 public:
 	ConnectHostDialog(CWnd* pParent = nullptr);   // 标准构造函数
 	virtual ~ConnectHostDialog();

@@ -1,5 +1,5 @@
 #pragma once
-class Message
+class ControlMessage
 {
 public:
 };

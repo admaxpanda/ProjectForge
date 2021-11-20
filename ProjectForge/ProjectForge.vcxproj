@@ -146,7 +146,7 @@
     <ClInclude Include="ConnectHostDialog.h" />
     <ClInclude Include="CreateHostDialog.h" />
     <ClInclude Include="HelpDialog.h" />
-    <ClInclude Include="Message.h" />
+    <ClInclude Include="ControlMessage.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="resource.h" />
@@ -163,7 +163,7 @@
     <ClCompile Include="ConnectHostDialog.cpp" />
     <ClCompile Include="CreateHostDialog.cpp" />
     <ClCompile Include="HelpDialog.cpp" />
-    <ClCompile Include="Message.cpp" />
+    <ClCompile Include="ControlMessage.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="State.cpp" />
     <ClCompile Include="WebManager.cpp" />

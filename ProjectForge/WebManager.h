@@ -11,9 +11,10 @@ public:
 	void createHost(string localIP, const int localport);
 	void connectHost(string ip, const int port);
 	void disconnet();
-	void rest();
-	int recive[10];
-	int send[10];
+	void sendOnTimer();
+	int recive[10] = { 0 };
+	int send[10] = { 0 };
+	int isconnecting=0;
 	WebManager(Wnd*);
 };
 

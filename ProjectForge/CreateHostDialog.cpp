@@ -56,6 +56,7 @@ void CreateHostDialog::OnBnClickedOk()
 	GetDlgItemText(IDC_EDIT2, b);
 	ip = CT2A(a.GetBuffer());
 	port = _ttoi(b);
+	confirm++;
 	// TODO: 在此添加控件通知处理程序代码
 	CDialogEx::OnOK();
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include "pch.h"
-#include "Message.h"
 class State;
+class ControlMessage;
 class Player
 {
 public:
@@ -10,9 +10,12 @@ public:
 	int health;
 	int body;
 	CPoint mousepos;
-	queue<Message> messageQ;
+	//queue<ControlMessage> messageQ;
 	queue<int> damageQ;
 	queue<int> attackQ;
 	int stepCD;
+public:
+	Player();
+	int* toWebMessage();
 };
 
