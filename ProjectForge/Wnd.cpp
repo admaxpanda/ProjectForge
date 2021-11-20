@@ -12,6 +12,8 @@ BEGIN_MESSAGE_MAP(Wnd, CFrameWnd)
 	ON_COMMAND(CREATE_HOST, &Wnd::OnHost)
 	ON_COMMAND(CONNECT_HOST, &Wnd::OnConnect)
 	ON_WM_TIMER()
+	ON_WM_PAINT()
+	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
 
@@ -105,4 +107,23 @@ void Wnd::OnConnect()
 		webManager->connectHost(connect->ip, connect->port);
 	}
 	// TODO: 在此添加命令处理程序代码
+}
+
+void Wnd::BufferDraw(CDC* pDC) {
+
+}
+
+void Wnd::OnPaint()
+{
+	CPaintDC dc(this); // device context for painting
+					   // TODO: 在此处添加消息处理程序代码
+					   // 不为绘图消息调用 CFrameWnd::OnPaint()
+}
+
+
+BOOL Wnd::OnEraseBkgnd(CDC* pDC)
+{
+	// TODO: 在此添加消息处理程序代码和/或调用默认值
+
+	return 1;
 }

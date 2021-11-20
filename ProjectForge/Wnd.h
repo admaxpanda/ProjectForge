@@ -13,7 +13,9 @@ public:
     Player* player;
     CreateHostDialog* create;
     ConnectHostDialog* connect;
-
+    CDC bufferdc;
+    CBitmap bufferbmp;
+    void BufferDraw(CDC* pdc);
 public:
     DECLARE_MESSAGE_MAP()
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);
@@ -24,5 +26,7 @@ public:
     afx_msg void OnHost();
     afx_msg void OnConnect();
     afx_msg void OnTimer(UINT_PTR nIDEvnet);
+    afx_msg void OnPaint();
+    afx_msg BOOL OnEraseBkgnd(CDC* pDC);
 };
 
