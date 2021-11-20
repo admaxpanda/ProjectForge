@@ -8,6 +8,7 @@
 #include <afxdialogex.h>
 #include <string>
 #include <afxpriv.h>
+#include <cmath>
 
 #define PICTUREX 0
 #define PICTUREY 1
@@ -25,6 +26,7 @@ using std::queue;
 
 #define STEPCD 60
 #define TICK 17
+#define MATHPI 3.14159265458
 
 #define MESSAGE 0x7
 #define MESSAGEMOVE 0x1

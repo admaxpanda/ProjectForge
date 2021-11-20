@@ -5,7 +5,7 @@ class State;
 class Player
 {
 public:
-	State* state;
+	State* state=null;
 	CPoint pos;
 	int health;
 	int body;
