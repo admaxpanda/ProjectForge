@@ -15,11 +15,15 @@ public:
     ConnectHostDialog* connect;
     CDC bufferdc;
     CBitmap bufferbmp;
-    int attacktime;
+    CPen penHealth, penHealthEmpty, penBody, penBodyEmpty;
+    CBitmap* characterA, * characterB;
+    int attacktime=0;
     void BufferDraw(CDC* pdc);
     void controlmanager();
     static int keydown(int key);
     static double getRadian(CPoint o, CPoint p);
+    static int getToward(double toward);
+    static int getToward(int toward);
 public:
     DECLARE_MESSAGE_MAP()
     afx_msg int OnCreate(LPCREATESTRUCT lpCreateStruct);

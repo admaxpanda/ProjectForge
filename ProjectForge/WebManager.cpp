@@ -6,6 +6,7 @@ WebManager::WebManager(Wnd* wnd) {
 	WORD w = MAKEWORD(2, 0);
 	::WSAStartup(w, &data);
 	sock=::socket(AF_INET, SOCK_DGRAM, 0);
+	
 	//send[STATEID] = 1;
 }
 UINT WebManager::thread(LPVOID pParam) {
@@ -67,9 +68,9 @@ void WebManager::disconnet() {
 	send[STATEID] = 0;
 	sendto(sock, (char*)send, sizeof(send), 0, (sockaddr*)&localAddr, localLen);
 	sendto(sock, (char*)send, sizeof(send), 0, (sockaddr*)&targetAddr, targetLen);
-	closesocket(sock);
-	wnd->menu.EnableMenuItem(DISCONNECT, MF_GRAYED);
-	wnd->menu.EnableMenuItem(CREATE_HOST, MF_ENABLED);
-	wnd->menu.EnableMenuItem(CONNECT_HOST, MF_ENABLED);
+	//closesocket(sock);
+	//wnd->menu.EnableMenuItem(DISCONNECT, MF_GRAYED);
+	//wnd->menu.EnableMenuItem(CREATE_HOST, MF_ENABLED);
+	//wnd->menu.EnableMenuItem(CONNECT_HOST, MF_ENABLED);
 	return;
 }

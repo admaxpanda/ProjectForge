@@ -3,7 +3,7 @@
 #include "WebManager.h"
 #include "CreateHostDialog.h"
 #include "ConnectHostDialog.h"
-
+#include "wingdi.h"
 BEGIN_MESSAGE_MAP(Wnd, CFrameWnd)
 	ON_WM_CREATE()
 	ON_WM_GETMINMAXINFO()
@@ -17,7 +17,26 @@ BEGIN_MESSAGE_MAP(Wnd, CFrameWnd)
 	ON_WM_ERASEBKGND()
 END_MESSAGE_MAP()
 
-
+int Wnd::getToward(double toward) {
+	while (toward < 0)
+		toward += 2 * MATHPI;
+	while (toward > 2 * MATHPI)
+		toward -= 2 * MATHPI;
+	if (toward <= MATHPI)
+		return 1;
+	else
+		return 0;
+}
+int Wnd::getToward(int toward) {
+	while (toward < 0)
+		toward += 360;
+	while (toward > 360)
+		toward -= 360;
+	if (toward <= 180)
+		return 1;
+	else
+		return 0;
+}
 int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 	if (CFrameWnd::OnCreate(lpCreateStruct) == -1)
@@ -30,30 +49,45 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	webManager = new WebManager(this);
 	create = new CreateHostDialog;
 	connect = new ConnectHostDialog;
+	player = new Player;
+	penHealth.CreatePen(PS_SOLID, 22, RGB(46, 139, 87));
+	penHealthEmpty.CreatePen(PS_SOLID, 20, RGB(139, 0, 0));
+	penBody.CreatePen(PS_SOLID, 22, RGB(255, 215, 0));
+	penBodyEmpty.CreatePen(PS_SOLID, 20, RGB(55, 42, 8));
+	characterA = new CBitmap;
+	characterB = new CBitmap;
+	characterA->m_hObject=(HBITMAP)::LoadImage(0, L"characterA.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	characterB->m_hObject = (HBITMAP)::LoadImage(0, L"characterB.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
+	CClientDC dc(this);
 	// TODO:  在此添加您专用的创建代码
-	SetTimer(0, 17, 0);
+	SetTimer(0, 100, 0);
 	return 0;
 }
 
 void Wnd::OnTimer(UINT_PTR nIDEvnet) {
 	//_cprintf("QUQ\n");
-	//GetCursorPos(&player->mousepos);
-	//ScreenToClient(&player->mousepos);
+	Invalidate();
+	memcpy(webManager->send, player->toWebMessage(), sizeof(webManager->send));
+	GetCursorPos(&player->mousepos);
+	ScreenToClient(&player->mousepos);
 	if (webManager->isconnecting) {
 		memcpy(webManager->send, player->toWebMessage(),sizeof(webManager->send));
 		webManager->sendOnTimer();
 	}
+	for (int i = 0; i < 11; i++)
+		_cprintf("%d ", webManager->recive[i]);
+	_cprintf("\n");
 	controlmanager();
-	queue<ControlMessage> tmp;
-	memcpy(&tmp, &player->messageQ, sizeof(player->messageQ));
-	while (!tmp.empty()) {
-		_cprintf("%d", tmp.front().ID);
-		tmp.pop();
-	}
+	queue<ControlMessage> tmp(player->messageQ);
+	//_cprintf("\n");
+	//while (!tmp.empty()) {
+	//	_cprintf("%d ", tmp.front().ID);
+	//	tmp.pop();
+	//}
 	//player->stateCalculation(webManager->recive);
 }
 int Wnd::keydown(int key) {
-	return GetKeyState(VK_LSHIFT) < 0;
+	return GetKeyState(key) < 0;
 }
 double Wnd::getRadian(CPoint o, CPoint p) {
 	if (p.x > o.x)
@@ -79,6 +113,7 @@ double Wnd::getRadian(CPoint o, CPoint p) {
 			return 0;
 }
 void Wnd::controlmanager() {
+	
 	if (player->stepCD > 0)
 		player->stepCD--;
 	if (keydown(VK_SHIFT)) {
@@ -86,6 +121,7 @@ void Wnd::controlmanager() {
 			player->messageQ.pop();
 		if (!player->stepCD)
 		{
+			//_cprintf("%d", keydown(VK_SHIFT));
 			double cnt = 0;
 			int horizontal = 0, vertical = 0;
 			if (keydown('W'))vertical++;
@@ -114,10 +150,12 @@ void Wnd::controlmanager() {
 				else
 					cnt = getRadian(player->pos,player->mousepos);
 			player->stepCD = 60;
+			//_cprintf("MESSAGESTEP\n");
 			player->messageQ.push(ControlMessage(MESSAGESTEP, cnt));
 			return;
 		}
 	}
+	//_cprintf("%d", keydown(VK_RBUTTON));
 	if (keydown(VK_RBUTTON)) {
 		if (player->messageQ.empty() || player->messageQ.back().ID != MESSAGEDEFEND)
 			player->messageQ.push(ControlMessage(MESSAGEDEFEND, getRadian(player->pos, player->mousepos)));
@@ -146,8 +184,10 @@ void Wnd::controlmanager() {
 	if (!keydown(VK_LBUTTON)&&attacktime) {
 		if (attacktime <= 20) {
 			player->messageQ.push(ControlMessage(MESSAGEATTACK, getRadian(player->pos, player->mousepos)));
+			attacktime = 0;
 			return;
 		}
+		attacktime = 0;
 	}
 	if(!c){
 		double cnt = 0;
@@ -252,9 +292,79 @@ void Wnd::BufferDraw(CDC* pDC) {
 
 void Wnd::OnPaint()
 {
-	CPaintDC dc(this); // device context for painting
-					   // TODO: 在此处添加消息处理程序代码
-					   // 不为绘图消息调用 CFrameWnd::OnPaint()
+	CPaintDC dc(this);
+	CRect rectClient;
+	CDC dcMem, dcBkgnd;
+	CBitmap bitmapTemp, * pOldBitmap;
+	GetClientRect(&rectClient);//获取窗口信息
+	bitmapTemp.CreateCompatibleBitmap(&dc, rectClient.Width(), rectClient.Height());//创建内存位图
+	dcMem.CreateCompatibleDC(&dc); //依附窗口DC创建兼容的DC
+	pOldBitmap = dcMem.SelectObject(&bitmapTemp);//将内存位图选入内存dc
+	//填充颜色
+	dcMem.FillSolidRect(rectClient, RGB(255, 255, 255));   //填充颜色
+
+	/*
+	各种绘图操作在这里进行
+	*/
+	CDC*playerA = new CDC,*playerB=new CDC;
+	playerA->CreateCompatibleDC(&dc);
+	playerA->SelectObject(characterA);
+	playerB->CreateCompatibleDC(&dc);
+	playerB->SelectObject(characterB);
+	if (webManager->recive[STATEID]) {
+		if (getToward(webManager->recive[TOWARD]))
+			dcMem.BitBlt(webManager->recive[POSX] - CHARACTERWIDTH / 2, webManager->recive[POSY] - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerB, 1024 + webManager->recive[PICTUREX] * CHARACTERWIDTH, webManager->recive[PICTUREY] * CHARACTERWIDTH, SRCAND);
+		else
+			dcMem.BitBlt(webManager->recive[POSX] - CHARACTERWIDTH / 2, webManager->recive[POSY] - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerB, 896 - webManager->recive[PICTUREX] * CHARACTERWIDTH, -webManager->recive[PICTUREY] * CHARACTERWIDTH, SRCAND);
+	}
+	if (getToward(player->gettoward()))
+		dcMem.BitBlt(player->pos.x - CHARACTERWIDTH/2, player->pos.y - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerA, 1024 + player->getpicutre().x* CHARACTERWIDTH, player->getpicutre().y* CHARACTERWIDTH, SRCAND);
+	else
+		dcMem.BitBlt(player->pos.x - CHARACTERWIDTH/2, player->pos.y - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerA, 896 - player->getpicutre().x* CHARACTERWIDTH, -player->getpicutre().y* CHARACTERWIDTH, SRCAND);
+	if (webManager->recive[STATEID]) {
+		dcMem.SelectObject(&penHealthEmpty);
+		dcMem.MoveTo(CPoint(1000, 30));
+		dcMem.LineTo(CPoint(1300, 30));
+		if (webManager->recive[HEALTH]) {
+			dcMem.SelectObject(&penHealth);
+			dcMem.MoveTo(CPoint(1000, 30));
+			dcMem.LineTo(CPoint(1000 + webManager->recive[HEALTH] * 3, 30));
+		}
+		if (webManager->recive[BODY]) {
+			dcMem.SelectObject(&penBodyEmpty);
+			dcMem.MoveTo(CPoint(483, 30));
+			dcMem.LineTo(CPoint(883, 30));
+			dcMem.SelectObject(&penBody);
+			dcMem.MoveTo(CPoint(683 - webManager->recive[BODY] * 2, 30));
+			dcMem.LineTo(CPoint(683 + webManager->recive[BODY] * 2, 30));
+		}
+		
+	}
+	dcMem.SelectObject(&penHealthEmpty);
+	dcMem.MoveTo(CPoint(66, 680));
+	dcMem.LineTo(CPoint(366, 680));
+	if (player->health) {
+		dcMem.SelectObject(&penHealth);
+		dcMem.MoveTo(CPoint(66, 680));
+		dcMem.LineTo(CPoint(66 + player->health * 3, 680));
+	}
+	if (player->body) {
+		dcMem.SelectObject(&penBodyEmpty);
+		dcMem.MoveTo(CPoint(483, 680));
+		dcMem.LineTo(CPoint(883, 680));
+		dcMem.SelectObject(&penBody);
+		dcMem.MoveTo(CPoint(683 - player->body * 2, 680));
+		dcMem.LineTo(CPoint(683 + player->body * 2, 680));
+	}
+	
+
+	//dcMem.BitBlt(0, 0, 1024, 512, mdc, 0, 0, SRCCOPY);
+	dc.BitBlt(0, 0, rectClient.Width(), rectClient.Height(), &dcMem, 0, 0, SRCCOPY);//绘制图片到主dc
+	//dc.BitBlt(0, 0, 1024, 512, mdc, 0, 0, SRCCOPY);
+	//dcMem.SelectObject(pOldBitmap);//清理
+	dcMem.DeleteDC();
+	playerA->DeleteDC();
+	playerB->DeleteDC();
 }
 
 

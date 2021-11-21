@@ -1,6 +1,6 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Visual C++ 生成的包含文件。
-// 供 ProjectForge.rc 使用
+// Microsoft Visual C++ generated include file.
+// Used by ProjectForge.rc
 //
 #define MAIN_MENU                       4
 #define HELP                            101
@@ -10,6 +10,7 @@
 #define CREATE_HOST_DIALOG              110
 #define CREATE_HOST_DIALOG1             111
 #define CONNECT_HOST_DIALOG             111
+#define CHARACTER                       113
 #define IDC_EDIT1                       1003
 #define IDC_EDIT2                       1004
 #define ID_40001                        40001
@@ -27,7 +28,7 @@
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        112
+#define _APS_NEXT_RESOURCE_VALUE        115
 #define _APS_NEXT_COMMAND_VALUE         40011
 #define _APS_NEXT_CONTROL_VALUE         1004
 #define _APS_NEXT_SYMED_VALUE           101

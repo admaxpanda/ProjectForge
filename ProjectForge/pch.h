@@ -20,6 +20,7 @@
 #define STATEID 7
 #define HEALTH 8
 #define BODY 9
+#define RANGE 10
 using std::string;
 using std::map;
 using std::queue;
@@ -36,3 +37,9 @@ using std::queue;
 #define MESSAGEJUMP 0x5
 #define MESSAGESTEP 0x6
 #define MESSAGESQUAT 0x7
+
+#define TICK1 17
+
+#define CHARACTERWIDTH 128
+#define r2a(A) A/MATHPI*180
+#define a2r(A) A/180*MATHPI

@@ -12,8 +12,8 @@ public:
 	void connectHost(string ip, const int port);
 	void disconnet();
 	void sendOnTimer();
-	int recive[10] = { 0 };
-	int send[10] = { 0 };
+	int recive[11] = { 0 };
+	int send[11] = { 0 };
 	int isconnecting=0;
 	WebManager(Wnd*);
 };
