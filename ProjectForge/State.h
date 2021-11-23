@@ -4,43 +4,119 @@
 class State
 {
 public:
-	Player* player;
+	Player* player=NULL;
 	//时间
-	int totTick=0;
-	int startTick=0;
-	int passTick=0;
+	int stagecount=0;
+	int stagenow = 0;
+	int stagetick[10] = { 0 };
+	int passtick = 0;
 	//状态
-	CPoint picture;
-	int damage;
-	CPoint pos;
-	double toward;
-	int lenth;
-	double range;
+	CPoint picture=CPoint(0,0);
+	int damage=0;
+	CPoint pos=CPoint(800,400);
+	int toward= 90;
+	int lenth=0;
+	int range=0;
 	//下一个
-	State* next;
-	int ID;
+	State* next=NULL;
+	int ID = 0;
 	void virtual stateCalculation(const int[])=0;
-	void virtual damageCalculation(int[]) = 0;
+	void virtual damageCalculation(const int[]) = 0;
+	int IsOverlapBODY(const int[]);
+	int IsOverlapATTACK(const int[]);
+	static double getPointsLenth(int x1,int y1,int x2,int y2);
+	static int getAngle(int x1, int y1, int x2, int y2);
+	static double heron(CPoint a,CPoint b,CPoint c);
 	//void virtual messageReact() = 0;
 	//int virtual isOverlap(CPoint,double,int) = 0;
-	State(Player*);
+	State(Player*,int);
 	State();
+	~State();
 };
 class Standing :public State {
 public:
-	void virtual damageCalculation(int[]);
+	void virtual damageCalculation(const int[]);
 	void virtual stateCalculation(const int[]);
-	Standing(Player*);
+	Standing(Player*, int);
+	Standing();
 };
-class Movint :public Standing {
+class Damaged :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	Damaged(Player*, int);
+	Damaged();
+};
+class Moving :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	Moving(Player*, int);
+	Moving();
+	void movestep(int, int);
+};
+class Steping :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	Steping(Player*, int);
+	Steping();
+};
+class AttackingMID :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	AttackingMID(Player*, int);
+	AttackingMID();
+};
+class Defending :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	Defending(Player*, int);
+	Defending();
+};
+class Stocked :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	Stocked(Player*, int);
+	Stocked();
+};
+class Spiking :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	Spiking(Player*, int);
+	Spiking();
+};
 
-};
+
 class Jumping :public State {
-	//void virtual damageCalculation(int[]);
+public:
+	void virtual damageCalculation(const int[]);
+	void virtual stateCalculation(const int[]);
+	Jumping(Player*, int);
+	Jumping();
 };
-class squating :public State {
-	//void virtual damageCalculation(int[]);
+class AttackingUP :public Jumping {
+public:
+	void virtual stateCalculation(const int[]);
+	AttackingUP(Player*, int);
+	AttackingUP();
 };
-class dead :public State {
-	//void virtual damageCalculation(int[]);
+
+class Squating :public State {
+public:
+	void virtual damageCalculation(const int[]);
+	void virtual stateCalculation(const int[]);
+	Squating(Player*, int);
+	Squating();
+};
+class AttackingDOWN :public Squating {
+public:
+	void virtual stateCalculation(const int[]);
+	AttackingDOWN(Player*, int);
+	AttackingDOWN();
+};
+
+class Dead :public State {
+public:
+	void virtual damageCalculation(const int[]);
+	void virtual stateCalculation(const int[]);
+	Dead(Player*, int);
+	Dead();
 };

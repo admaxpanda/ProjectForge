@@ -70,13 +70,13 @@ void Wnd::OnTimer(UINT_PTR nIDEvnet) {
 	memcpy(webManager->send, player->toWebMessage(), sizeof(webManager->send));
 	GetCursorPos(&player->mousepos);
 	ScreenToClient(&player->mousepos);
-	if (webManager->isconnecting) {
-		memcpy(webManager->send, player->toWebMessage(),sizeof(webManager->send));
+	if (webManager->isconnecting)
+		//memcpy(webManager->send, player->toWebMessage(),sizeof(webManager->send));
 		webManager->sendOnTimer();
-	}
-	for (int i = 0; i < 11; i++)
-		_cprintf("%d ", webManager->recive[i]);
-	_cprintf("\n");
+	
+	//for (int i = 0; i < 11; i++)
+	//	_cprintf("%d ", webManager->recive[i]);
+	//_cprintf("\n");
 	controlmanager();
 	queue<ControlMessage> tmp(player->messageQ);
 	//_cprintf("\n");
@@ -122,7 +122,7 @@ void Wnd::controlmanager() {
 		if (!player->stepCD)
 		{
 			//_cprintf("%d", keydown(VK_SHIFT));
-			double cnt = 0;
+			int cnt = 0;
 			int horizontal = 0, vertical = 0;
 			if (keydown('W'))vertical++;
 			if (keydown('S'))vertical--;
@@ -130,25 +130,25 @@ void Wnd::controlmanager() {
 			if (keydown('D'))horizontal++;
 			if (vertical > 0)
 				if (horizontal > 0)
-					cnt = MATHPI / 4;
+					cnt = 45;
 				else if (horizontal < 0)
-					cnt = MATHPI / 4 * 7;
+					cnt = 315;
 				else
 					cnt = 0;
 			else if (vertical < 0)
 				if (horizontal > 0)
-					cnt = MATHPI / 4 * 3;
+					cnt = 135;
 				else if (horizontal < 0)
-					cnt = MATHPI / 4 * 5;
+					cnt = 225;
 				else
-					cnt = MATHPI;
+					cnt = 180;
 			else
 				if (horizontal > 0)
-					cnt = MATHPI / 2;
+					cnt = 90;
 				else if (horizontal < 0)
-					cnt = MATHPI / 2 * 3;
+					cnt = 270;
 				else
-					cnt = getRadian(player->pos,player->mousepos);
+					cnt = r2a(getRadian(player->pos,player->mousepos));
 			player->stepCD = 60;
 			//_cprintf("MESSAGESTEP\n");
 			player->messageQ.push(ControlMessage(MESSAGESTEP, cnt));
@@ -158,14 +158,14 @@ void Wnd::controlmanager() {
 	//_cprintf("%d", keydown(VK_RBUTTON));
 	if (keydown(VK_RBUTTON)) {
 		if (player->messageQ.empty() || player->messageQ.back().ID != MESSAGEDEFEND)
-			player->messageQ.push(ControlMessage(MESSAGEDEFEND, getRadian(player->pos, player->mousepos)));
+			player->messageQ.push(ControlMessage(MESSAGEDEFEND, r2a(getRadian(player->pos, player->mousepos))));
 		return;
 	}
 	if (keydown(VK_LBUTTON)) {
 		attacktime++;
 		if (attacktime > 20){
 			if (player->messageQ.empty() || player->messageQ.back().ID != MESSAGESPIKE)
-				player->messageQ.push(ControlMessage(MESSAGESPIKE, getRadian(player->pos, player->mousepos)));
+				player->messageQ.push(ControlMessage(MESSAGESPIKE, r2a(getRadian(player->pos, player->mousepos))));
 			return;
 		}
 
@@ -183,14 +183,14 @@ void Wnd::controlmanager() {
 	}
 	if (!keydown(VK_LBUTTON)&&attacktime) {
 		if (attacktime <= 20) {
-			player->messageQ.push(ControlMessage(MESSAGEATTACK, getRadian(player->pos, player->mousepos)));
+			player->messageQ.push(ControlMessage(MESSAGEATTACK, r2a(getRadian(player->pos, player->mousepos))));
 			attacktime = 0;
 			return;
 		}
 		attacktime = 0;
 	}
 	if(!c){
-		double cnt = 0;
+		int cnt=0;
 		int horizontal = 0, vertical = 0;
 		if (keydown('W'))vertical++;
 		if (keydown('S'))vertical--;
@@ -198,23 +198,23 @@ void Wnd::controlmanager() {
 		if (keydown('D'))horizontal++;
 		if (vertical > 0)
 			if (horizontal > 0)
-				cnt = MATHPI / 4;
+				cnt = 45;
 			else if (horizontal < 0)
-				cnt = MATHPI / 4 * 7;
+				cnt = 315;
 			else
 				cnt = 0;
 		else if (vertical < 0)
 			if (horizontal > 0)
-				cnt = MATHPI / 4 * 3;
+				cnt = 135;
 			else if (horizontal < 0)
-				cnt = MATHPI / 4 * 5;
+				cnt = 225;
 			else
-				cnt = MATHPI;
+				cnt = 180;
 		else
 			if (horizontal > 0)
-				cnt = MATHPI / 2;
+				cnt = 90;
 			else if (horizontal < 0)
-				cnt = MATHPI / 2 * 3;
+				cnt = 270;
 			else
 				cnt = -1;
 		if (cnt != -1){

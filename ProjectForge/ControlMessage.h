@@ -4,7 +4,7 @@ class ControlMessage
 {
 public:
 	int ID;
-	double toward;
+	int toward;
 	ControlMessage(int ID,double toward);
 };
 

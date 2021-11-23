@@ -7,19 +7,19 @@ int* Player::toWebMessage() {
 	l[DAMAGE] = state->damage;
 	l[POSX] = state->pos.x;
 	l[POSY] = state->pos.y;
-	l[TOWARD] = r2a(state->toward);
+	l[TOWARD] = state->toward;
 	l[LENTH] = state->lenth;
 	l[STATEID] = state->ID;
 	l[HEALTH] = health;
 	l[BODY] = body;
-	l[RANGE] = r2a(state->range);
+	l[RANGE] = state->range;
 	return l;
 }
 void Player::stateCalculation(const int c[]) {
 	state->stateCalculation(c);
 }
 Player::Player() {
-	this->state = new Standing(this);
+	//this->state = new Standing(this);
 	pos.x = pos.y = 400;
 }
 double Player::gettoward() {
