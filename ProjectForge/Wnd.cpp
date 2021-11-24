@@ -50,6 +50,7 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	create = new CreateHostDialog;
 	connect = new ConnectHostDialog;
 	player = new Player;
+	player->create(player);
 	penHealth.CreatePen(PS_SOLID, 22, RGB(46, 139, 87));
 	penHealthEmpty.CreatePen(PS_SOLID, 20, RGB(139, 0, 0));
 	penBody.CreatePen(PS_SOLID, 22, RGB(255, 215, 0));
@@ -67,6 +68,7 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 void Wnd::OnTimer(UINT_PTR nIDEvnet) {
 	//_cprintf("QUQ\n");
 	Invalidate();
+	//_cprintf("%x", player->state->ID);
 	memcpy(webManager->send, player->toWebMessage(), sizeof(webManager->send));
 	GetCursorPos(&player->mousepos);
 	ScreenToClient(&player->mousepos);
@@ -78,7 +80,10 @@ void Wnd::OnTimer(UINT_PTR nIDEvnet) {
 	//	_cprintf("%d ", webManager->recive[i]);
 	//_cprintf("\n");
 	controlmanager();
-	queue<ControlMessage> tmp(player->messageQ);
+	player->stateCalculation(webManager->recive);
+	//if (player->stateToDelete)
+	//	delete player->stateToDelete;
+	//queue<ControlMessage> tmp(player->messageQ);
 	//_cprintf("\n");
 	//while (!tmp.empty()) {
 	//	_cprintf("%d ", tmp.front().ID);
@@ -113,7 +118,9 @@ double Wnd::getRadian(CPoint o, CPoint p) {
 			return 0;
 }
 void Wnd::controlmanager() {
-	
+	//int d =(int)( r2a(getRadian(player->pos, player->mousepos)));
+	//_cprintf("%d\n", d);
+	//_cprintf("%d %f", d, r2a(getRadian(player->pos, player->mousepos)));
 	if (player->stepCD > 0)
 		player->stepCD--;
 	if (keydown(VK_SHIFT)) {
@@ -149,9 +156,11 @@ void Wnd::controlmanager() {
 					cnt = 270;
 				else
 					cnt = r2a(getRadian(player->pos,player->mousepos));
-			player->stepCD = 60;
+			player->stepCD = 10;
+			//printf("*%d\n", cnt);
 			//_cprintf("MESSAGESTEP\n");
 			player->messageQ.push(ControlMessage(MESSAGESTEP, cnt));
+			//_cprintf("PUSHED\n");
 			return;
 		}
 	}
@@ -163,7 +172,7 @@ void Wnd::controlmanager() {
 	}
 	if (keydown(VK_LBUTTON)) {
 		attacktime++;
-		if (attacktime > 20){
+		if (attacktime > 5){
 			if (player->messageQ.empty() || player->messageQ.back().ID != MESSAGESPIKE)
 				player->messageQ.push(ControlMessage(MESSAGESPIKE, r2a(getRadian(player->pos, player->mousepos))));
 			return;
@@ -182,7 +191,7 @@ void Wnd::controlmanager() {
 		c++;
 	}
 	if (!keydown(VK_LBUTTON)&&attacktime) {
-		if (attacktime <= 20) {
+		if (attacktime <= 5) {
 			player->messageQ.push(ControlMessage(MESSAGEATTACK, r2a(getRadian(player->pos, player->mousepos))));
 			attacktime = 0;
 			return;
@@ -317,10 +326,11 @@ void Wnd::OnPaint()
 		else
 			dcMem.BitBlt(webManager->recive[POSX] - CHARACTERWIDTH / 2, webManager->recive[POSY] - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerB, 896 - webManager->recive[PICTUREX] * CHARACTERWIDTH, -webManager->recive[PICTUREY] * CHARACTERWIDTH, SRCAND);
 	}
+	//_cprintf("%d %d\n", player->gettoward(), getToward(player->gettoward()));
 	if (getToward(player->gettoward()))
-		dcMem.BitBlt(player->pos.x - CHARACTERWIDTH/2, player->pos.y - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerA, 1024 + player->getpicutre().x* CHARACTERWIDTH, player->getpicutre().y* CHARACTERWIDTH, SRCAND);
+		dcMem.BitBlt(player->pos.x - CHARACTERWIDTH / 2, player->pos.y - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerA, 1024 + player->getpicutre().x * CHARACTERWIDTH, player->getpicutre().y * CHARACTERWIDTH, SRCAND);
 	else
-		dcMem.BitBlt(player->pos.x - CHARACTERWIDTH/2, player->pos.y - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerA, 896 - player->getpicutre().x* CHARACTERWIDTH, -player->getpicutre().y* CHARACTERWIDTH, SRCAND);
+		dcMem.BitBlt(player->pos.x - CHARACTERWIDTH / 2, player->pos.y - CHARACTERWIDTH, CHARACTERWIDTH, CHARACTERWIDTH, playerA, 896 - player->getpicutre().x * CHARACTERWIDTH, player->getpicutre().y * CHARACTERWIDTH, SRCAND);
 	if (webManager->recive[STATEID]) {
 		dcMem.SelectObject(&penHealthEmpty);
 		dcMem.MoveTo(CPoint(1000, 30));

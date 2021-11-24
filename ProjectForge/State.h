@@ -85,6 +85,8 @@ public:
 	Spiking(Player*, int);
 	Spiking();
 };
+
+
 class Lookthrough :public Standing {
 public:
 	void virtual stateCalculation(const int[]);

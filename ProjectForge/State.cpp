@@ -1,5 +1,7 @@
 #include "State.h"
+#include "conio.h"
 State::State() {
+
 }
 State::State(Player* player,int toward) {
 	this->player = player;
@@ -148,8 +150,15 @@ int State::IsOverlapATTACK(const int enemy[]) {
 	}
 	return 0;
 }
-Standing::Standing(Player* player, int toward) {
+Standing::Standing(Player*player, int toward) {
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
 	ID |= DAMAGESTANDING|DISATTACKING;
+}
+Standing::Standing()
+{
+	ID |= DAMAGESTANDING | DISATTACKING;
 }
 int Standing::damageCalculation(const int enemy[]) {
 	if (!(enemy[STATEID] & ATTACKSTATE ^ ATTACKING) &&
@@ -169,9 +178,13 @@ int Standing::damageCalculation(const int enemy[]) {
 }
 void Standing::stateCalculation(const int enemy[]) {
 	if(damageCalculation(enemy))return;
+	/*if (this->player)
+		_cprintf("???");*/
+	//_cprintf("%d", (toward));
 	if (!(player->messageQ.empty())) {
 		ControlMessage tmp = player->messageQ.front();
 		player->messageQ.pop();
+		//_cprintf("%d %d\n", tmp.ID, tmp.toward);
 		if (tmp.ID == MESSAGEMOVE)
 			player->state = new Moving(player, tmp.toward);
 		if (tmp.ID == MESSAGEATTACK)
@@ -180,18 +193,22 @@ void Standing::stateCalculation(const int enemy[]) {
 			player->state = new Defending(player, tmp.toward);
 		if (tmp.ID == MESSAGESPIKE)
 			player->state = new Spiking(player, tmp.toward);
-		if (tmp.ID == MESSAGEJUMP)
-			player->state = new Jumping(player, tmp.toward);
+		/*if (tmp.ID == MESSAGEJUMP)
+			player->state = new Jumping(player, tmp.toward);*/
 		if (tmp.ID == MESSAGESTEP)
 			player->state = new Steping(player, tmp.toward);
-		if (tmp.ID == MESSAGESQUAT)
-			player->state = new Squating(player, tmp.toward);
+		/*if (tmp.ID == MESSAGESQUAT)
+			player->state = new Squating(player, tmp.toward);*/
 		deleteState();
 		return;
 	}
+
 }
 
 Damaged::Damaged(Player* player, int toward) {
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
 	if (player->health < 0) {
 		player->state = new Dead(player, toward);
 		deleteState();
@@ -239,10 +256,13 @@ void Damaged::stateCalculation(const int enemy[])
 }
 
 Moving::Moving(Player* player, int toward) {
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
 	ID |= METHODMOVING|STAGEACTING;
 	stagecount = 2;
-	stagetick[0] = stagetick[1] = 20;
-	if (1.0 * (180 - toward) / (player->mousepos.x - pos.x) > 0) {
+	stagetick[0] = stagetick[1] = 3;
+	if (1.0 * (180 - toward) / (player->mousepos.x - pos.x) >= 0) {
 		picture.x = 2;
 		picture.y = 1;
 	}
@@ -250,6 +270,10 @@ Moving::Moving(Player* player, int toward) {
 		picture.x = 0;
 		picture.y = 1;
 	}
+	while (!player->attackQ.empty())
+		player->attackQ.pop();
+	while (!player->damageQ.empty())
+		player->damageQ.pop();
 }
 void Moving::stateCalculation(const int enemy[]) {
 	if(damageCalculation(enemy))return;
@@ -279,7 +303,7 @@ void Moving::stateCalculation(const int enemy[]) {
 			return;
 		}
 		else {
-			pos.x++;
+			picture.x++;
 			passtick = 0;
 			stagenow ++;
 		}
@@ -294,20 +318,29 @@ void Moving::stateCalculation(const int enemy[]) {
 		}
 }
 
-Steping::Steping(Player*, int) {
+Steping::Steping(Player* player, int toward) {
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
 	ID |= METHODSTEP|STAGEPREING;
 	stagecount = 3;
-	stagetick[0] = 5;
-	stagetick[1] = 30;
-	stagetick[2] = 5;
+	stagetick[0] = 1;
+	stagetick[1] = 2;
+	stagetick[2] = 1;
 	picture.x = 5;
 	picture.y = 2;
+
+	while (!player->attackQ.empty())
+		player->attackQ.pop();
+	while (!player->damageQ.empty())
+		player->damageQ.pop();
+
 }
 void Steping::stateCalculation(const int enemy[]) {
 	if (stagenow != 1 && passtick > 10)
 		if(damageCalculation(enemy))return;
 	passtick++;
-	if (stagenow==0)
+	if (stagenow == 0) {
 		if (!(enemy[STATEID] & ATTACKTYPE ^ ATTACKSPIKE)
 			&& !(enemy[STATEID] & STAGE ^ STAGEACTING)) {
 			player->state = new Lookthrough(player, toward);
@@ -322,6 +355,7 @@ void Steping::stateCalculation(const int enemy[]) {
 				deleteState();
 				return;
 			}
+	}
 	if (stagenow == 1) {
 		if (toward == 0)
 			movestep(0, -20);
@@ -370,7 +404,22 @@ void Steping::stateCalculation(const int enemy[]) {
 void AttackingMID::stateCalculation(const int enemy[]){
 	if (damageCalculation(enemy))return;
 	passtick++;
-	if(!(ID&STAGE^STAGEDAMAGING))
+	//_cprintf("%d:%d\n", stagenow, passtick);
+	if (stagenow == 0 || stagenow == 3) {
+		//_cprintf("TIP1\n");
+		if (stagenow == 3);
+			//_cprintf("%d\n",passtick);
+		if (!player->messageQ.empty()) {
+			if (player->messageQ.front().ID == MESSAGESTEP) {
+				player->state = new Standing(player, toward);
+				deleteState();
+				return;
+			}
+
+		}
+	}
+	if (stagenow==2) {
+		//_cprintf("TIP2\n");
 		if (!(enemy[STATEID] & METHOD ^ METHODDEFENDING) &&
 			!(enemy[STATEID] & STAGE ^ STAGEACTING)) {
 			if (IsOverlapATTACK(enemy)) {
@@ -378,7 +427,12 @@ void AttackingMID::stateCalculation(const int enemy[]){
 				stagenow = 4;
 				picture.x += 2;
 				player->body += 8 * player->attackQ.size();
-				stagetick[4] += 6 * player->attackQ.size();
+				if (player->body > 100) {
+					player->state = new Stocked(player, toward);
+					deleteState();
+					return;
+				}
+				//stagetick[4] += 6 * player->attackQ.size();
 				player->attackQ.push(1);
 				ID += 2;
 			}
@@ -397,6 +451,192 @@ void AttackingMID::stateCalculation(const int enemy[]){
 			player->attackQ.push(1);
 			ID++;
 		}
+	}
+	if (passtick > stagetick[stagenow]) {
+		//_cprintf("TIP3\n");
+		if (stagenow < 3) {
+			passtick = 0;
+			stagenow++;
+			picture.x++;
+			ID++;
+		}
+		else {
+			//_cprintf("QAQ");
+			player->state = new Standing(player, toward);
+			deleteState();
+			return;
+		}
+	}
+
+}
+
+AttackingMID::AttackingMID(Player* player, int toward) {
+	_cprintf("\n");
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
+	ID = ID & ATTACKSTATEANY | ATTACKING | STAGEPREING | ATTACKMID;	
+	stagecount = 5;
+	stagetick[0] = 1;
+	stagetick[1] = 2;
+	stagetick[2] = 1;
+	stagetick[3] = 1;
+	stagetick[4] = 2;
+	picture.x = 0;
+	picture.y = 2;
+	lenth = CHARACTERWIDTH / 4 * 3;
+	range = 45;
+	damage = 10;
+}
+
+
+
+
+
+Defending::Defending(Player* player, int toward) {
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
+	stagecount = 4;
+	ID |= METHODDEFENDING | STAGEPREING;
+	stagetick[0] = 1;
+	stagetick[1] = 2;
+	stagetick[2] = 1;
+	stagetick[3] = 2;
+	picture.x = 4;
+	picture.y = 1;
+	lenth = CHARACTERWIDTH / 4 * 3;
+	range = 60;
+}
+
+void Defending::stateCalculation(const int enemy[]) {
+	passtick++;
+	if (stagenow == 2||stagenow==0) {
+		if (damageCalculation(enemy))return;
+		if(!player->messageQ.empty())
+			if (player->messageQ.front().ID == MESSAGESTEP)
+			{
+				player->state = new Standing(player, toward);
+				deleteState();
+				return;
+			}
+	}
+	else if(stagenow==1){
+		if(!(enemy[STATEID]&ATTACKSTATE^ATTACKING))
+			if (!(enemy[STATEID] & STAGE ^ STAGEDAMAGING))
+				if ((enemy[STATEID] & ATTACKTYPE ^ ATTACKDOWN))
+					if (IsOverlapATTACK(enemy)) {
+						player->body += enemy[damage] - (10 - passtick / 4);
+						if (player->body > 100) {
+							player->state = new Stocked(player, toward);
+							deleteState();
+							return;
+						}
+						stagenow = 3;
+						//stagetick[3] -= 2 * player->damageQ.size();
+						player->damageQ.push(1);
+						passtick = 0;
+						picture.x += 2;
+						ID += 3;
+					}
+	}
+	if (passtick > stagetick[stagenow]) {
+		if (stagenow == 0) {
+			passtick = 0;
+			stagenow++;
+			picture.x++;
+			ID++;
+		}
+		else if (stagenow == 1) {
+			passtick = 0;
+			stagenow++;
+			picture.x++;
+			ID += 2;
+		}
+		else {
+			player->state = new Standing(player, toward);
+			deleteState();
+			return;
+		}
+	}
+}
+
+Spiking::Spiking(Player* player, int toward) {
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
+	ID = ATTACKING | ATTACKSPIKE | DAMAGESTANDING | STAGEPREING;
+	stagecount = 6;
+	stagetick[0] = 1;
+	stagetick[1] = 1;
+	stagetick[2] = 1;
+	stagetick[3] = 1;
+	stagetick[4] = 5;
+	stagetick[5] = 1;
+	picture.y = 3;
+	picture.x = 0;
+	range = 30;
+	lenth = CHARACTERWIDTH / 2 * 3;
+}
+void Spiking::stateCalculation(const int enemy[]) {
+	if (damageCalculation(enemy))return;
+	passtick++;
+	if (stagenow == 0 || stagenow == 3) {
+		if (!player->messageQ.empty()) {
+			if (player->messageQ.front().ID == MESSAGESTEP) {
+				player->state = new Standing(player, toward);
+				deleteState();
+				return;
+			}
+		}
+	}
+	if((stagenow==0)&&(!player->messageQ.empty()))
+		if (player->messageQ.front().ID == MESSAGESPIKE) {
+			toward = player->messageQ.front().toward;
+			passtick = 0;
+			player->messageQ.pop();
+		}
+	if(stagenow==1)
+		if(!(enemy[STATEID]&METHOD^METHODSTEP))
+			if (!(enemy[STATEID] & STAGE ^ STAGEPREING))
+			{
+				player->body += 30;
+				if (player->body > 100) {
+					player->state = new Stocked(player, toward);
+					deleteState();
+					return;
+				}
+				ID += 4;
+				stagenow = 4;
+				passtick = 0;
+				picture.x += 3;
+			}
+	if (stagenow == 2) {
+		if (!(enemy[STATEID] & METHOD ^ METHODDEFENDING) &&
+			!(enemy[STATEID] & STAGE ^ STAGEACTING) &&
+			IsOverlapATTACK(enemy) ){
+			passtick = 0;
+				stagenow = 5;
+				picture.x = 3;
+				picture.y = 2;
+				player->body += 8 * player->attackQ.size();
+				if (player->body > 100) {
+					player->state = new Stocked(player, toward);
+						deleteState();
+						return;
+				}
+			stagetick[5] += 6 * player->attackQ.size();
+			player->attackQ.push(1);
+			ID += 2;
+		}
+		else if (IsOverlapBODY(CPoint(enemy[POSX], enemy[POSY]))) {
+			passtick = 0;
+			stagenow = 3;
+			picture.x++;
+			player->attackQ.push(1);
+			ID++;
+		}
+	}
 	if (passtick > stagetick[stagenow]) {
 		if (stagenow < 3) {
 			passtick = 0;
@@ -404,31 +644,67 @@ void AttackingMID::stateCalculation(const int enemy[]){
 			picture.x++;
 			ID++;
 		}
-		else  {
-			player->state = new Standing();
+		else {
+			player->state = new Standing(player, toward);
 			deleteState();
 			return;
 		}
 	}
+		
 }
 
-AttackingMID::AttackingMID(Player*, int) {
-	ID = ID & ATTACKSTATEANY | ATTACKING | STAGEPREING | ATTACKMID;	
-	stagecount = 5;
-	stagetick[0] = 5;
-	stagetick[1] = 20;
-	stagetick[2] = 5;
-	stagetick[3] = 5;
-	stagetick[4] = 10;
-	picture.x = 0;
-	picture.y = 2;
-	lenth = CHARACTERWIDTH / 4 * 3;
-	range = 45;
-	damage = 20;
+
+Stocked::Stocked(Player* player, int toward) {
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
+	ID |= METHODSTOCKING;
+	stagecount = 1;
+	stagetick[0] = 60;
+	picture.y = 0;
+	picture.x = 3;
 }
+void Stocked::stateCalculation(const int enemy[]) {
+	if (damageCalculation(enemy))return;
+	passtick++;
+	if (passtick > stagetick[stagenow]) {
+		player->state = new Standing(player, toward);
+		deleteState();
+		return;
+	}
+}
+
+Lookthrough::Lookthrough(Player* player,int toward){
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
+	ID |= METHODLOOKTHOUGH;
+	stagecount = 1;
+	stagetick[0] = 60;
+	picture.x = 2;
+	picture.y = 0;
+}
+void Lookthrough::stateCalculation(const int enemy[]) {
+	if (damageCalculation(enemy))return;
+	passtick++;
+	if (passtick > stagetick[stagenow]) {
+		player->state = new Standing(player, toward);
+		deleteState();
+		return;
+	}
+	if (!player->messageQ.empty()) {
+		player->state = new Standing(player, toward);
+		deleteState();
+		return;
+	}
+}
+
 int Jumping::damageCalculation(const int[])
 {
-
+	return 0;
+}
+void Jumping::stateCalculation(const int[])
+{
 }
 Jumping::Jumping(Player* player, int toward)
 {
@@ -437,7 +713,11 @@ Jumping::Jumping(Player* player, int toward)
 
 int Squating::damageCalculation(const int[])
 {
-	
+	return 0;
+}
+
+void Squating::stateCalculation(const int[])
+{
 }
 
 Squating::Squating(Player* player, int toward)
@@ -447,9 +727,28 @@ Squating::Squating(Player* player, int toward)
 
 int Dead::damageCalculation(const int enemy[])
 {
+	return 0;
+}
+
+void Dead::stateCalculation(const int[])
+{
+	passtick++;
+	if (passtick > stagetick[stagenow]) {
+		player->health = 100;
+		player->body = 0;
+		player->state = new Standing(player, toward);
+		deleteState();
+		return;
+	}
 }
 
 Dead::Dead(Player* player, int toward)
 {
 	ID |= DAMAGEDEAD;
+	this->player = player;
+	this->pos = player->pos;
+	this->toward = toward;
+	stagecount = 1;
+	stagetick[0] = 30;
+	picture.x = 1;
 }

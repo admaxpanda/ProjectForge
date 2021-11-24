@@ -1,5 +1,5 @@
 #include "ControlMessage.h"
-ControlMessage::ControlMessage(int ID,double toward) {
+ControlMessage::ControlMessage(int ID,int toward) {
 	this->ID = ID;
-	this->toward = r2a(toward);
+	this->toward = toward;
 }

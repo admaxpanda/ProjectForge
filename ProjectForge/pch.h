@@ -72,6 +72,7 @@ using std::queue;
 #define METHODDAMAGE	0x00040
 #define METHODSTOCKING	0x00050
 #define METHODDEAD		0x00060
+#define METHODLOOKTHOUGH 0x00070
 
 #define STAGEANY		0xFFFF0
 #define STAGE			0x0000F
