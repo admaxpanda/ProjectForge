@@ -21,12 +21,15 @@ public:
 	State* next=NULL;
 	int ID = 0;
 	void virtual stateCalculation(const int[])=0;
-	void virtual damageCalculation(const int[]) = 0;
+	int virtual damageCalculation(const int[]) = 0;
 	int IsOverlapBODY(const int[]);
+	int IsOverlapBODY(CPoint);
 	int IsOverlapATTACK(const int[]);
+	void movestep(int, int);
 	static double getPointsLenth(int x1,int y1,int x2,int y2);
 	static int getAngle(int x1, int y1, int x2, int y2);
 	static double heron(CPoint a,CPoint b,CPoint c);
+	void deleteState();
 	//void virtual messageReact() = 0;
 	//int virtual isOverlap(CPoint,double,int) = 0;
 	State(Player*,int);
@@ -35,7 +38,7 @@ public:
 };
 class Standing :public State {
 public:
-	void virtual damageCalculation(const int[]);
+	int virtual damageCalculation(const int[]);
 	void virtual stateCalculation(const int[]);
 	Standing(Player*, int);
 	Standing();
@@ -51,7 +54,6 @@ public:
 	void virtual stateCalculation(const int[]);
 	Moving(Player*, int);
 	Moving();
-	void movestep(int, int);
 };
 class Steping :public Standing {
 public:
@@ -83,11 +85,16 @@ public:
 	Spiking(Player*, int);
 	Spiking();
 };
-
+class Lookthrough :public Standing {
+public:
+	void virtual stateCalculation(const int[]);
+	Lookthrough(Player*, int);
+	Lookthrough();
+};
 
 class Jumping :public State {
 public:
-	void virtual damageCalculation(const int[]);
+	int virtual damageCalculation(const int[]);
 	void virtual stateCalculation(const int[]);
 	Jumping(Player*, int);
 	Jumping();
@@ -101,7 +108,7 @@ public:
 
 class Squating :public State {
 public:
-	void virtual damageCalculation(const int[]);
+	int virtual damageCalculation(const int[]);
 	void virtual stateCalculation(const int[]);
 	Squating(Player*, int);
 	Squating();
@@ -115,7 +122,7 @@ public:
 
 class Dead :public State {
 public:
-	void virtual damageCalculation(const int[]);
+	int virtual damageCalculation(const int[]);
 	void virtual stateCalculation(const int[]);
 	Dead(Player*, int);
 	Dead();

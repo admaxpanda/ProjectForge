@@ -6,6 +6,7 @@ class Player
 {
 public:
 	State* state;
+	State* stateToDelete;
 	CPoint pos;
 	int health=100;
 	int body=0;

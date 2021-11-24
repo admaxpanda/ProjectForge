@@ -8,7 +8,41 @@ State::State(Player* player,int toward) {
 }
 State::~State()
 {
-	;
+	if(next)
+		delete next;
+}
+void State::deleteState() {
+	if (player->stateToDelete) {
+		State* tmp = player->stateToDelete;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = this;
+	}
+	else
+		player->stateToDelete = this;
+}
+void State::movestep(int x, int y) {
+	if (x > 0)
+		if (pos.x < 1366 - CHARACTERWIDTH / 2 - x)
+			player->pos.x = pos.x = pos.x + x;
+		else
+			player->pos.x = pos.x = 1366 - CHARACTERWIDTH / 2;
+	if (x < 0)
+		if (pos.x > CHARACTERWIDTH / 2 - x)
+			player->pos.x = pos.x = pos.x + x;
+		else
+			player->pos.x = pos.x = CHARACTERWIDTH / 2;
+	if (y > 0)
+		if (pos.y < 768 - CHARACTERWIDTH / 8 - y)
+			player->pos.y = pos.y = pos.y + y;
+		else
+			player->pos.y = pos.y = 768 - CHARACTERWIDTH / 8;
+	if (y < 0)
+		if (pos.y > CHARACTERWIDTH - y)
+			player->pos.y = pos.y = pos.y + y;
+		else
+			player->pos.y = pos.y = CHARACTERWIDTH;
+
 }
 double State::getPointsLenth(int x1, int y1, int x2, int y2) {
 	return sqrt((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1));
@@ -61,6 +95,26 @@ int State::IsOverlapBODY(const int enemy[]) {
 			return 1;
 	return 0;
 }
+int State::IsOverlapBODY(CPoint pos) {
+	CPoint a[4], b[4];
+	a[0].x = a[1].x = pos.x - CHARACTERWIDTH / 4;
+	a[2].x = a[3].x = pos.x + CHARACTERWIDTH / 4;
+	a[0].y = a[3].y = pos.y - CHARACTERWIDTH / 8 * 3;
+	a[1].y = a[2].y = pos.y + CHARACTERWIDTH / 8;
+
+	b[0].x = this->pos.x; b[0].y = this->pos.y -CHARACTERWIDTH / 8;
+	b[2].x = b[0].x + lenth * sin(a2r(toward));
+	b[2].y = b[0].x + lenth * cos(a2r(toward));
+	b[1].y = b[0].x + lenth * cos(a2r(toward - range));
+	b[1].y = b[0].x + lenth * cos(a2r(toward - range));
+	b[3].y = b[0].x + lenth * cos(a2r(toward + range));
+	b[3].y = b[0].x + lenth * cos(a2r(toward + range));
+
+	for (int i = 0; i < 3; i++)
+		if (b[i].x > a[0].x && b[i].x<a[2].x && b[i].y>a[0].y && b[i].y < a[1].y)
+			return 1;
+	return 0;
+}
 int State::IsOverlapATTACK(const int enemy[]) {
 	CPoint a[4], b[4];
 	a[0].x = pos.x; a[0].y = pos.y - CHARACTERWIDTH / 8;
@@ -97,7 +151,7 @@ int State::IsOverlapATTACK(const int enemy[]) {
 Standing::Standing(Player* player, int toward) {
 	ID |= DAMAGESTANDING|DISATTACKING;
 }
-void Standing::damageCalculation(const int enemy[]) {
+int Standing::damageCalculation(const int enemy[]) {
 	if (!(enemy[STATEID] & ATTACKSTATE ^ ATTACKING) &&
 		!(enemy[STATEID] & STAGE ^ DAMAGE)
 		) {
@@ -107,12 +161,14 @@ void Standing::damageCalculation(const int enemy[]) {
 			player->health -= series * enemy[damage];
 			player->body += series * enemy[damage];
 			player->state = new Damaged(player, toward);
-			delete this;
+			deleteState();
+			return 1;
 		}
 	}
+	return 0;
 }
 void Standing::stateCalculation(const int enemy[]) {
-	damageCalculation(enemy);
+	if(damageCalculation(enemy))return;
 	if (!(player->messageQ.empty())) {
 		ControlMessage tmp = player->messageQ.front();
 		player->messageQ.pop();
@@ -130,18 +186,21 @@ void Standing::stateCalculation(const int enemy[]) {
 			player->state = new Steping(player, tmp.toward);
 		if (tmp.ID == MESSAGESQUAT)
 			player->state = new Squating(player, tmp.toward);
-		delete this;
+		deleteState();
+		return;
 	}
 }
 
 Damaged::Damaged(Player* player, int toward) {
 	if (player->health < 0) {
 		player->state = new Dead(player, toward);
-		delete this;
+		deleteState();
+		return;
 	}
 	if (player->body > 100) {
 		player->state = new Stocked(player, toward);
-		delete this;
+		deleteState();
+		return;
 	}
 	ID |= METHODDAMAGE;
 	picture.x = 4;
@@ -154,7 +213,7 @@ Damaged::Damaged(Player* player, int toward) {
 }
 void Damaged::stateCalculation(const int enemy[])
 {
-	damageCalculation(enemy);
+	if(damageCalculation(enemy))return;
 	passtick++;
 	if (stagenow)
 		if (!(player->messageQ.empty())) {
@@ -162,14 +221,16 @@ void Damaged::stateCalculation(const int enemy[])
 			if (tmp.ID == MESSAGESTEP) {
 				player->messageQ.pop();
 				player->state = new Steping(player, tmp.toward);
-				delete this;
+				deleteState();
+				return;
 			}
 		}
 	if(passtick>stagetick[stagenow])
 		if (stagenow) {
 			player->state = new Standing(player, toward);
 			player->state->stateCalculation(enemy);
-			delete this;
+			deleteState();
+			return;
 		}
 		else {
 			stagenow++;
@@ -190,31 +251,8 @@ Moving::Moving(Player* player, int toward) {
 		picture.y = 1;
 	}
 }
-void Moving::movestep(int x,int y) {
-	if (x > 0)
-		if (pos.x < 1366 - CHARACTERWIDTH / 2 - x)
-			player->pos.x = pos.x = pos.x + x;
-		else
-			player->pos.x = pos.x = 1366 - CHARACTERWIDTH / 2;
-	if (x < 0)
-		if (pos.x > CHARACTERWIDTH / 2 - x)
-			player->pos.x = pos.x = pos.x + x;
-		else
-			player->pos.x = pos.x = CHARACTERWIDTH / 2;
-	if (y > 0)
-		if (pos.y < 768 - CHARACTERWIDTH / 8 - y)
-			player->pos.y = pos.y = pos.y + y;
-		else
-			player->pos.y = pos.y = 768 - CHARACTERWIDTH / 8;
-	if (y < 0)
-		if (pos.y > CHARACTERWIDTH - y)
-			player->pos.y = pos.y = pos.y + y;
-		else
-			player->pos.y = pos.y = CHARACTERWIDTH;
-
-}
 void Moving::stateCalculation(const int enemy[]) {
-	damageCalculation(enemy);
+	if(damageCalculation(enemy))return;
 	passtick++;
 	if (toward == 0)
 		movestep(0, -10);
@@ -237,7 +275,8 @@ void Moving::stateCalculation(const int enemy[]) {
 	if (passtick > stagetick[stagenow]) {
 		if (stagenow) {
 			player->state = new Standing(player, toward);
-			delete this;
+			deleteState();
+			return;
 		}
 		else {
 			pos.x++;
@@ -250,7 +289,8 @@ void Moving::stateCalculation(const int enemy[]) {
 			&& player->messageQ.front().toward == toward)) {
 			player->state = new Standing(player, toward);
 			player->state->stateCalculation(enemy);
-			delete this;
+			deleteState();
+			return;
 		}
 }
 
@@ -265,21 +305,49 @@ Steping::Steping(Player*, int) {
 }
 void Steping::stateCalculation(const int enemy[]) {
 	if (stagenow != 1 && passtick > 10)
-		damageCalculation(enemy);
+		if(damageCalculation(enemy))return;
 	passtick++;
-	if(!stagenow)
-		if (!(player->messageQ.empty()))
+	if (stagenow==0)
+		if (!(enemy[STATEID] & ATTACKTYPE ^ ATTACKSPIKE)
+			&& !(enemy[STATEID] & STAGE ^ STAGEACTING)) {
+			player->state = new Lookthrough(player, toward);
+			deleteState();
+			return;
+		}
+		else if (!(player->messageQ.empty()))
 			if (!(player->messageQ.front().ID == MESSAGESTEP
 				&& player->messageQ.front().toward == toward)) {
 				player->state = new Standing(player, toward);
 				player->state->stateCalculation(enemy);
-				delete this;
+				deleteState();
+				return;
 			}
+	if (stagenow == 1) {
+		if (toward == 0)
+			movestep(0, -20);
+		else if (toward == 45)
+			movestep(14, -14);
+		else if (toward == 90)
+			movestep(20, 0);
+		else if (toward == 135)
+			movestep(14, 14);
+		else if (toward == 180)
+			movestep(0, 20);
+		else if (toward == 225)
+			movestep(-14, 14);
+		else if (toward == 270)
+			movestep(-20, 0);
+		else if (toward == 315)
+			movestep(-14, -14);
+		else if (toward == 360)
+			movestep(0, -20);
+	}
 	if(stagenow==2)
 		if (!(player->messageQ.empty())) {
 			player->state = new Standing(player, toward);
 			player->state->stateCalculation(enemy);
-			delete this;
+			deleteState();
+			return;
 		}
 	if (passtick > stagetick[stagenow]) {
 		if (stagenow < 2) {
@@ -293,13 +361,72 @@ void Steping::stateCalculation(const int enemy[]) {
 		}
 		else {
 			player->state = new Standing(player, toward);
-			delete this;
+			deleteState();
+			return;
 		}
 	}
 }
 
+void AttackingMID::stateCalculation(const int enemy[]){
+	if (damageCalculation(enemy))return;
+	passtick++;
+	if(!(ID&STAGE^STAGEDAMAGING))
+		if (!(enemy[STATEID] & METHOD ^ METHODDEFENDING) &&
+			!(enemy[STATEID] & STAGE ^ STAGEACTING)) {
+			if (IsOverlapATTACK(enemy)) {
+				passtick = 0;
+				stagenow = 4;
+				picture.x += 2;
+				player->body += 8 * player->attackQ.size();
+				stagetick[4] += 6 * player->attackQ.size();
+				player->attackQ.push(1);
+				ID += 2;
+			}
+			else if (IsOverlapBODY(CPoint(enemy[POSX], enemy[POSY]))) {
+				passtick = 0;
+				stagenow = 3;
+				picture.x++;
+				player->attackQ.push(1);
+				ID++;
+			}
+		}
+		else if (IsOverlapBODY(CPoint(enemy[POSX], enemy[POSY]))) {
+			passtick = 0;
+			stagenow = 3;
+			picture.x++;
+			player->attackQ.push(1);
+			ID++;
+		}
+	if (passtick > stagetick[stagenow]) {
+		if (stagenow < 3) {
+			passtick = 0;
+			stagenow++;
+			picture.x++;
+			ID++;
+		}
+		else  {
+			player->state = new Standing();
+			deleteState();
+			return;
+		}
+	}
+}
 
-void Jumping::damageCalculation(const int[])
+AttackingMID::AttackingMID(Player*, int) {
+	ID = ID & ATTACKSTATEANY | ATTACKING | STAGEPREING | ATTACKMID;	
+	stagecount = 5;
+	stagetick[0] = 5;
+	stagetick[1] = 20;
+	stagetick[2] = 5;
+	stagetick[3] = 5;
+	stagetick[4] = 10;
+	picture.x = 0;
+	picture.y = 2;
+	lenth = CHARACTERWIDTH / 4 * 3;
+	range = 45;
+	damage = 20;
+}
+int Jumping::damageCalculation(const int[])
 {
 
 }
@@ -308,7 +435,7 @@ Jumping::Jumping(Player* player, int toward)
 	ID |= DAMAGEJUMPING;
 }
 
-void Squating::damageCalculation(const int[])
+int Squating::damageCalculation(const int[])
 {
 	
 }
@@ -318,7 +445,7 @@ Squating::Squating(Player* player, int toward)
 	ID |= DAMAGESQUATING;
 }
 
-void Dead::damageCalculation(const int enemy[])
+int Dead::damageCalculation(const int enemy[])
 {
 }
 
