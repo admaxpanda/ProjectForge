@@ -61,7 +61,7 @@ int Wnd::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	characterB->m_hObject = (HBITMAP)::LoadImage(0, L"characterB.bmp", IMAGE_BITMAP, 0, 0, LR_LOADFROMFILE);
 	CClientDC dc(this);
 	// TODO:  在此添加您专用的创建代码
-	SetTimer(0, 100, 0);
+	SetTimer(0, TICK1, 0);
 	return 0;
 }
 

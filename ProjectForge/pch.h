@@ -26,7 +26,7 @@ using std::map;
 using std::queue;
 
 #define STEPCD 60
-#define TICK 17
+#define TICK 70
 #define MATHPI 3.14159265458
 #define CHARACTERWIDTH 128
 
@@ -39,7 +39,7 @@ using std::queue;
 #define MESSAGESTEP		0x6
 #define MESSAGESQUAT	0x7
 
-#define TICK1 17
+#define TICK1 42
 
 
 #define r2a(A) (A)/MATHPI*180
